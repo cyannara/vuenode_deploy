@@ -1,71 +1,130 @@
-*** 참고사이트
-1) 네이버 서버 구축 : https://devmg.tistory.com/346
-2) Ubuntu 기반 MariaDB 설치 : https://velog.io/@sirius506775/How-to-install-MariaDB-in-Ubuntu-22.04-server
+## MariaDB with Ubuntu(Naver Cloud)
 
-*** 인바운드 규칙 변경
+### 참고사이트
 
-# 패키지 업데이트
+- 네이버 서버 구축 : https://devmg.tistory.com/346
+- Ubuntu 기반 MariaDB 설치 : https://velog.io/@sirius506775/How-to-install-MariaDB-in-Ubuntu-22.04-server
+
+### MCP 서버 접속
+
+- 인바운드 규칙 변경
+
+### 패키지 업데이트
+
+```sh
 sudo apt update
+```
 
-# mariadb 설치
+### mariadb 설치
+
+```sh
 sudo apt install mariadb-server
+```
 
-# mariadb 실행
+### mariadb 실행
+
+```sh
 sudo mariadb
+```
 
-# mairadb 보안 설정
+### mairadb 보안 설정
+
+```sh
 sudo mariadb-secure-installation
+```
 
-# mairadb 접속
+### mairadb 접속
+
+```sh
 mariadb -u root -p
+```
 
-# 설정 변경 
-# 1) port 추가 및 테이블 대소문자 구분(적용X)
+### 설정 변경
+
+#### 1) port 추가 및 테이블 대소문자 구분(적용X)
+
 sudo vim /etc/mysql/mariadb.conf.d/50-server.cnf
-위의 파일을 수정해야하는데 이파일은 마리아db의 설정파일임
+위의 파일을 수정해야하는데 이파일은 마리아db의 설정파일임  
 -- 추가
+
+```
 port = 3306
 lower_case_table_names = 1
+```
 
-# 2) 데이터베이스 바인딩 주소 주석처리
+##### 2) 데이터베이스 바인딩 주소 주석처리
+
+```sh
 sudo vim /etc/mysql/mariadb.conf.d/50-server.cnf
+```
 
 --주석처리
-bind-address              = 127.0.0.1
 
-# mariadb 재시작
+```
+bind-address = 127.0.0.1
+```
+
+### mariadb 재시작
+
+```sh
 sudo service mariadb restart
+```
 
-# port 접속 확인
+### port 접속 확인
+
+```sh
 telnet localhost 3306
+```
 
-# mariadb 접속
+### mariadb 접속
+
+```sh
 sudo mariadb
+```
 
-# lower_case_table_names 확인
+### lower_case_table_names 확인
+
+```sh
 show variables like 'lower_case_table_names';
+```
 
+### 방화벽 설정
 
-# 방화벽 설정
+```sh
 sudo ufw allow 3306/tcp
 sudo ufw allow 22/tcp
+```
 
-# 방화벽 실행
+### 방화벽 실행
+
+```sh
 sudo ufw enable
+```
 
-# 방화벽 확인
+### 방화벽 확인
+
+```sh
 sudo ufw status
+```
 
+### mairadb 접속
 
-# mairadb 접속
+```sh
 mariadb -u root -p
+```
 
-# 새로운 데이터베이스 및 계정 생성, 권한 부여
+### 새로운 데이터베이스 및 계정 생성, 권한 부여
+
+```sh
 CREATE DATABASE `dev` DEFAULT CHARACTER SET utf8 collate utf8_general_ci;
 CREATE USER 'dev01'@'%' IDENTIFIED BY '1234';
-GRANT ALL PRIVILEGES ON dev.* TO 'dev01'@'%' IDENTIFIED BY '1234' WITH GRANT OPTION;
-GRANT ALL PRIVILEGES ON dev.* TO 'dev01'@'localhost' IDENTIFIED BY '1234' WITH GRANT OPTION;
+GRANT ALL PRIVILEGES ON dev._ TO 'dev01'@'%' IDENTIFIED BY '1234' WITH GRANT OPTION;
+GRANT ALL PRIVILEGES ON dev._ TO 'dev01'@'localhost' IDENTIFIED BY '1234' WITH GRANT OPTION;
 FLUSH PRIVILEGES;
+```
 
-# 새로운 계정 접속확인
+### 새로운 계정 접속확인
+
+```sh
 mariadb -u dev01 -p
+```
