@@ -1,11 +1,10 @@
 <template>
   <nav>
     <router-link to="/">Home</router-link> |
+    <router-link to="/guestbook">GuestBook</router-link> |
     <router-link to="/about">About</router-link>
   </nav>
-  test 수정합니다... dist 복사...
-  <hr>
-  <router-view/>
+  <router-view />
 </template>
 
 <style>
