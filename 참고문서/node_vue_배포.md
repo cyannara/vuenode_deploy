@@ -1,7 +1,3 @@
-https://velog.io/@new_wisdom/AWS-EC2%EC%97%90-Node.jsExpress-pm2-nginx-배포하기#-ubuntu-기본-세팅--nodejs-pm2-nginx-설치
-
-54.180.202.222
-
 ## vue + node 배포
 
 ### 학습목표
@@ -139,21 +135,7 @@ http://localhost:3000
 
 네이버 서버 구축 : https://devmg.tistory.com/346
 
-### 4. 서버에 소스 내려받기
-
-```sh
-# git clone
-git clone https://github.com/cyannara/project.git
-
-# 노드 서버 패키지 설치
-cd project/backend
-npm install
-
-```
-
-.env 파일 전송
-
-### 5. 서버에 node 설치
+### 4. 서버에 node 설치
 
 nvm을 이용하여 node 설치  
 nvm(node version manager) : 여러 개의 노드 버전을 사용할 수 있는 도구
@@ -164,12 +146,14 @@ sudo apt-get update
 
 # nvm 설치
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.1/install.sh | bash
+source ~/.bashrc
+
 
 # nvm 설치 확인
 nvm --version
 
 # nvm 명령어로 node와 npm을 설치
-nvm install 22.14.0
+nvm install 24.11.0
 ```
 
 (선택) node 버전을 변경하려면
@@ -195,20 +179,44 @@ node -v
 # 로그아웃 후 다시 로그인 하면 node 버전이 이전상태로 돌아가 있음
 
 # node 기본 버전 변경
-$ nvm alias default v22.14.0
+$ nvm alias default v24.11.0
 
 ```
 
-서버 실행
+### 5. 서버에 소스 내려받기
 
 ```sh
-$ node backend/app.js
-$ node backend/app.js &
-$ node app.js > /dev/null 2>&1 &
-$ node app.js > ~/server.log 2>&1 &
+# git clone
+git clone https://github.com/cyannara/project.git
+
+# unzip 설치
+sudo apt install unzip
+
+# zip 파일전송
+
+# 압출풀기
+unzip backend.zip
+
+# .env 파일 전송
 ```
 
-브라우저로 서버 연결 확인
+### 6. 서버 실행
+
+```sh
+cd backend
+# 노드 서버 패키지 설치
+npm install
+# 서버 실행
+node app.js
+#node app.js &
+#node app.js > /dev/null 2>&1 &
+#node app.js > ~/server.log 2>&1 &
+
+# 서버 구동 테스트
+curl http://localhost:3000/api/guestbook
+```
+
+브라우저로 서버 연결 확인(방화벽 포트 3000 열고나서 확인)
 
 ```sh
 http://54.180.202.222:3000
@@ -271,7 +279,7 @@ $ ps -ef | grep node
 $ kill -9 27367
 ```
 
-### 6. PM2로 Node 서버 실행
+### 7. PM2로 Node 서버 실행
 
 클러스터 모드: Node.js 부하 분산 및 제로 다운타임 리로드  
 https://inpa.tistory.com/entry/node-%F0%9F%93%9A-PM2-모듈-사용법-클러스터-무중단-서비스  
@@ -291,32 +299,32 @@ Node JS 프로세서를 관리하는 패키지
 
 ```sh
 # pm2 global(전역 설치) 패키지를 현재 프로젝트가 아닌 시스템의 node_modules에 설치
-$ npm install pm2 -g
+npm install pm2 -g
 
 # 시스템 node_modules 경로 확인
-$ npm root -g
-/home/ubuntu/.nvm/versions/node/v22.14.0/lib/node_modules
+npm root -g
+# 실행결과: /home/ubuntu/.nvm/versions/node/v24.11.0/lib/node_modules
 
 # pm2 버전 확인
-$ pm2 --version
+pm2 --version
 
 # pm2 업데이트
-$ pm2 update
+pm2 update
 
 # pm2 실행
-$ pm2 start app.js
+pm2 start app.js
 
 # pm2로 실행중인 프로세스 확인
-$ pm2 list
+pm2 list
 
 # 프로세스 로그 확인
-$ pm2 logs app
+pm2 logs app
 
 # 프로세스 중지
-$ pm2 stop app
+pm2 stop app
 
 # 프로세스를 감시하여 리로드하도록 하고 멀티코어로 서버 실행(클러스터 모드)
-$ pm2 start app.js --watch -i 2
+pm2 start app.js --watch -i 2
 ```
 
 ### pm2 실행옵션
@@ -350,28 +358,38 @@ reload는 최소한 1개 이상의 프로세스를 유지하며 하나씩 재시
 
 1024 이하의 포트를 사용하려면 관리자 권한이 필요하므로 sudo 를 붙여서 실행하면 됨.
 
-### 7. Nginx로 프록시 설정
+### 8. [Nginx](https://wikidocs.net/223842)
 
-80/443 포트 진입점, Node로 트래픽 전달
+![alt text](image.png)
 
-Nginx 설치
+- 프록시 설정
+- 로드밸런싱하여 무중단으로 배포 할 수 있는 환경 구성하기
+- 80/443 포트 진입점, Node로 트래픽 전달
+
+#### Nginx 설치
 
 ```sh
-$ sudo apt update
-$ sudo apt install nginx
-$ nginx -v
+sudo apt update
+sudo apt install nginx
+nginx -v
 ```
 
-Nginx 구동
+#### Nginx 구동
 
 ```sh
-$ sudo systemctl start nginx        # sudo service nginx start
+sudo systemctl start nginx        # sudo service nginx start
 ```
 
-Nginx proxy 서버 설정
+#### 브라우저 테스트
+
+```
+http://서버ip:80
+```
+
+#### Nginx proxy 서버 설정
 
 ```sh
-$ sudo vi /etc/nginx/sites-available/default
+sudo vi /etc/nginx/sites-available/default
 ```
 
 ```shell
@@ -388,17 +406,26 @@ server {
 }
 ```
 
-Nginx 서버 재시작
+#### Nginx 서버 재시작
 
 ```sh
-$ sudo systemctl restart nginx     # sudo service nginx restart
+$ sudo systemctl reload nginx     # sudo service nginx restart
 $ sudo systemctl status nginx
 ```
 
-브라우저 테스트
+reload는 설정 변경 시 서비스 중단없이 변경사항을 적용하며 기존 연결은 유지됨. restart는 서비스를 완전히 종료했다가 재시작하므로 모든 연결이 끊어짐. 설정파일만 변경된 경우는 reload를 사용하고
+
+#### 브라우저 테스트
 
 ```
 http://서버ip:80
+```
+
+#### 로그보기
+
+```bash
+cat /var/log/nginx/access.log
+cat /var/log/nginx/error.log
 ```
 
 ### 9. [github action](https://docs.github.com/ko/actions)
@@ -506,31 +533,7 @@ jobs:
           EOF
 ```
 
-## 리눅스 명령어
-
-### 이전 명령어 실행 방법
-
-명령어를 수행하면 메모리에 먼저 저장되었다가 log out(log off)시에 .bash_history가 이전에 수행했던 명령어들을 저장한다. 로그아웃 후 다시 접속하더라도 history는 남아 있음.
-
-```sh
-$ history   # 이전에 실행했던 명령어 확인
-$ !번호     # 이전 명령어 다시 실행
-$ echo $HISTSIZE # history 내용 저장 갯수
-$ history -c
-```
-
-### history 출력 포멧 지정
-
-```sh
-$ vi /etc/profile
-```
-
-```
-# History Command Execute Time
-export HISTTIMEFORMAT="%F %T "
-```
-
-### github action 예시
+## github action 예시
 
 ```yml
 - name: Copy dist to backend/public
@@ -552,3 +555,31 @@ export HISTTIMEFORMAT="%F %T "
       pm2 restart app || pm2 start backend/app.js --name "app"
       pm2 save
 ```
+
+## 리눅스 명령어
+
+### 이전 명령어 실행 방법
+
+명령어를 수행하면 메모리에 먼저 저장되었다가 log out(log off)시에 .bash_history가 이전에 수행했던 명령어들을 저장한다. 로그아웃 후 다시 접속하더라도 history는 남아 있음.
+
+```sh
+$ history         # 이전에 실행했던 명령어 확인
+$ !번호           # 이전 명령어 다시 실행
+$ echo $HISTSIZE  # history 내용 저장 갯수
+$ history -c      # history clear
+```
+
+### history 출력 포멧 지정
+
+```sh
+$ vi /etc/profile
+```
+
+```
+# History Command Execute Time
+export HISTTIMEFORMAT="%F %T "
+```
+
+### referer
+
+https://velog.io/@new_wisdom/AWS-EC2%EC%97%90-Node.jsExpress-pm2-nginx-배포하기#-ubuntu-기본-세팅--nodejs-pm2-nginx-설치
