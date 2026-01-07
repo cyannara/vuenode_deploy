@@ -28,4 +28,4 @@ jobs:
           username: ${{ secrets.USER }}
           key: ${{ secrets.KEY }}
           script: |
-            rsync -av --delete frontapp/dist/ /var/www/frontapp/
+            rsync -rv --delete frontapp/dist/ /var/www/frontapp/
