@@ -29,4 +29,5 @@ jobs:
           username: ${{ secrets.USER }}
           key: ${{ secrets.KEY }}
           script: |
+            pwd
             rsync -rv --delete frontapp/dist/ /var/www/frontapp/
