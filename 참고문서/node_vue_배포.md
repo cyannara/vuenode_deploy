@@ -420,6 +420,8 @@ proxy_pass http://127.0.0.1:3000/
  proxy_pass 뒤에 / 가 있으면  
  /api/guestbook → /guestbook 으로 변환되어 Node에 전달됩니다.
 
+[proxy_path 참조](https://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_pass)
+
 #### Nginx 서버 재시작
 
 ```sh
@@ -493,7 +495,7 @@ GitHub → Settings → Secrets → Actions
 
 GitHub Actions 워크플로우 설정
 
-#### 2) .github/workflows/deploy.yml 생성:
+#### .github/workflows/deploy.yml 생성:
 
 - workflow : github action에서 작업할 프로세스를 정의. (test, build,package, deploy)
 - on(event) : workflow에서 감지하는 이벤트(push, pr)
@@ -550,6 +552,25 @@ jobs:
 ## github action 예시
 
 ```yml
+name: GitHub Actions Demo
+run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
+on: [push]
+jobs:
+  Explore-GitHub-Actions:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
+```
+
+github.actor  
+github.event_name  
+github.ref  
+github.repository  
+github.workspace  
+runner.os  
+job.status
+
+```yml
 - name: Copy dist to backend/public
   run: |
     rm -rf backend/public
@@ -569,6 +590,8 @@ jobs:
       pm2 restart app || pm2 start backend/app.js --name "app"
       pm2 save
 ```
+
+### yml 작성법
 
 ## 리눅스 명령어
 

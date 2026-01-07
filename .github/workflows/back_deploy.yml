@@ -1,0 +1,42 @@
+name: Backend Deploy
+
+on:
+  push:
+    paths:
+      - "backapp/**"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - run: |
+          cd backapp
+          npm install
+          npm run build || true
+
+      - name: Upload to Server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USER }}
+          key: ${{ secrets.KEY }}
+          source: "backapp/*"
+          target: ${{ secrets.BACK_PATH }}
+
+      - name: Restart Server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USER }}
+          key: ${{ secrets.KEY }}
+          script: |
+            cd ${{ secrets.BACK_PATH }}
+            npm install
+            pm2 reload backapp || pm2 start app.js --name backapp

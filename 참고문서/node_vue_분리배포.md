@@ -193,4 +193,53 @@ sudo systemctl reload nginx
 curl http://localhost/api/guestbook
 ```
 
-### 10. github action
+### 10. [github action](https://docs.github.com/ko/actions/writing-workflows/quickstart)
+
+```
+GitHub
+  ↓ (push)
+GitHub Actions
+  ↓
+[frontapp 수정 -> Front Build → 서버 업로드 → Nginx 반영]
+[backapp 수정 -> Back Deploy → 서버 업로드 → PM2 무중단 재시작]
+```
+
+##### [GitHub에 Secrets 등록](https://docs.github.com/ko/actions/how-tos/write-workflows/choose-what-workflows-do/use-secrets)
+
+GitHub → Settings → Secrets → Actions
+
+| 키 이름    | 설명                     |
+| :--------- | :----------------------- |
+| HOST       | 서버 주소 또는 IP        |
+| USER       | ubuntu                   |
+| KEY        | SSH 개인키 (id_rsa) 내용 |
+| FRONT_PATH | front 정적파일 위치      |
+| BACK_PATH  | node 소스 위치           |
+
+#### front workflow
+
+foont 파일 업로드. scp는 추가만 하고 삭제는 안 함.
+
+```yml
+- name: Upload Dist
+  uses: appleboy/scp-action@v0.1.7
+  with:
+    host: ${{ secrets.HOST }}
+    username: ${{ secrets.USER }}
+    key: ${{ secrets.KEY }}
+    source: "frontapp/dist/*"
+    target: ${{ secrets.FRONT_PATH }}
+```
+
+front 파일 sync
+
+```yml
+- name: Sync dist to server
+  uses: appleboy/ssh-action@v1.0.3
+  with:
+    host: ${{ secrets.HOST }}
+    username: ${{ secrets.USER }}
+    key: ${{ secrets.KEY }}
+    script: |
+      rsync -av --delete frontapp/dist/ ${{ secrets.FRONT_PATH }}/
+```
