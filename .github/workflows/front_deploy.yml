@@ -31,3 +31,4 @@ jobs:
           source: "frontapp/dist/*"
           target: /var/www/frontapp
           rm: true
+          strip_components: 2
