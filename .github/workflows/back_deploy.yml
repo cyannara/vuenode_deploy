@@ -40,5 +40,5 @@ jobs:
           key: ${{ secrets.KEY }}
           script: |
             cd ${{ secrets.BACK_PATH }}
-            npm install
-            pm2 reload app || pm2 start app.js --name app
+            /home/ubuntu/.nvm/versions/node/v24.11.0/bin/npm install
+            /home/ubuntu/.nvm/versions/node/v24.11.0/bin/pm2 reload app || pm2 start app.js --name app
