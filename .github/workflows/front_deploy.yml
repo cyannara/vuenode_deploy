@@ -20,6 +20,7 @@ jobs:
           cd frontapp
           npm install
           npm run build
+          ls -al dist
 
       - name: Sync dist to server
         uses: appleboy/ssh-action@v1.0.3
