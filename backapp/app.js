@@ -10,7 +10,7 @@ app.use("/guestbook", guestbookRouter);
 
 app.get("/", (req, res) => {
   console.log(req.url);
-  res.send("Hello World! 5");
+  res.send("Hello World! 6");
 });
 
 app.listen(port, () => {
