@@ -337,21 +337,16 @@ jobs:
           username: ${{ secrets.USER }}
           key: ${{ secrets.KEY }}
           script: |
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
             cd ${{ secrets.BACK_PATH }}
-            npm install
+            npm install  --omit=dev
             pm2 reload app || pm2 start app.js --name app
 ```
 
-```yml
-- name: Sync backend to server
-  uses: appleboy/ssh-action@v1.0.3
-  with:
-    host: ${{ secrets.HOST }}
-    username: ${{ secrets.USER }}
-    key: ${{ secrets.KEY }}
-    script: |
-      rsync -av --delete backapp/ ${{ secrets.BACK_PATH }}/
-      cd ${{ secrets.BACK_PATH }}
-      npm install --production
-      pm2 reload app || pm2 start app.js --name app
+GitHub Actions / ssh-action 은 로그인 쉘이 아닌 non-login shell로 실행되므로 $PATH 설정이 적용되지 않으므로 절대경로를 이용
+
+```bash
+which pm2
+which npm
 ```
