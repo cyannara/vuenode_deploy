@@ -22,7 +22,7 @@ jobs:
           npm run build
           ls -al dist
 
-      - name: Sync dist to server
+      - name: upload dist to server
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.HOST }}
