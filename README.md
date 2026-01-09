@@ -59,3 +59,10 @@ frontend/
     ├ app.vue
     └ main.js
 ```
+```sh
+#backapp 실행
+node app.js
+
+# frontapp 실행
+npm run serve
+```
