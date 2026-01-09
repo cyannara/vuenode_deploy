@@ -6,7 +6,7 @@ const guestbookRouter = require("./routes/guestbook");
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use("/guestbook", guestbookRouter);
+app.use("/api/guestbook", guestbookRouter);
 
 app.get("/", (req, res) => {
   console.log(req.url);
