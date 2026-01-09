@@ -12,15 +12,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 24
-
-      - run: |
-          cd backapp
-          npm install
-          npm run build || true
-
       - name: Upload to Server
         uses: appleboy/scp-action@v0.1.7
         with:
@@ -30,7 +21,6 @@ jobs:
           source: "backapp/*"
           target: ${{ secrets.BACK_PATH }}
           rm: true
-          strip_components: 1
 
       - name: Restart Server
         uses: appleboy/ssh-action@v1.0.3
