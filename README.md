@@ -38,7 +38,7 @@ backend/
 
 ```sh
 npm init -y
-npm install express sqlite3
+npm install express sqlite3 axios
 ```
 
 ## frontend
